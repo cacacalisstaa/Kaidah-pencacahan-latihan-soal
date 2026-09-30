@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNO Math Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Fira+Sans:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--red:#e73532;--blue:#1674cf;--green:#249849;--yellow:#f7bf20;--ink:#182133;--cream:#fffaf0}
+*{box-sizing:border-box}
+html{background:#562a18}
+body{margin:0;font-family:"DM Sans",sans-serif;color:var(--ink);overflow-x:hidden;min-height:100vh;
+background:repeating-linear-gradient(89deg,rgba(255,255,255,.035) 0 2px,transparent 2px 58px),linear-gradient(120deg,#552a19,#9a572d 48%,#723d21)}
+button,input{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:4px solid #fff;outline-offset:3px}
+.shell{position:relative;padding:26px 20px 60px;overflow:hidden;min-height:100vh}
+.main{max-width:1080px;margin:0 auto;position:relative;z-index:2}
+.screen{display:none;animation:enter .4s ease both}.screen.active{display:block}
+@keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.brand{color:#fff;text-align:center;text-shadow:0 3px 0 rgba(0,0,0,.28);margin:5px 0 23px}
+.brand h1{font-family:"Fira Sans",sans-serif;font-size:clamp(1.9rem,5vw,3.25rem);margin:0;letter-spacing:-.05em}
+.brand p{margin:6px 0 0;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:.95rem}
+.panel{background:rgba(255,250,240,.97);border:6px solid #fff;border-radius:30px;padding:clamp(22px,5vw,42px);box-shadow:0 12px 0 rgba(49,19,8,.28),0 18px 32px rgba(35,14,5,.22)}
+h2{font-family:"Fira Sans",sans-serif;font-size:clamp(1.5rem,4vw,2.2rem);margin:0}
+.sub{color:#4f5664;margin:8px 0 22px;font-weight:600}
+.center{text-align:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+label{display:block;font-weight:800;font-size:.9rem;margin-bottom:8px}
+input{width:100%;border:3px solid #d9cbbb;border-radius:14px;padding:13px 15px;background:#fff;color:var(--ink)}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #bee1ff}
+.err{min-height:23px;color:#ad201d;font-weight:700;font-size:.9rem;margin:12px 0 0}
+.btn{border:0;border-radius:999px;color:#fff;padding:13px 21px;font-weight:800;box-shadow:0 5px 0 rgba(0,0,0,.22);transition:transform .15s,filter .15s;display:inline-flex;align-items:center;gap:8px}
+.btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.06)}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.22)}
+.btn:disabled{cursor:not-allowed;opacity:.5;box-shadow:none}
+.b-red{background:var(--red)}.b-blue{background:var(--blue)}.b-yellow{background:var(--yellow);color:#372b00}
+.head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:16px}
+.pill{border-radius:999px;background:var(--ink);color:#fff;padding:10px 15px;font-weight:800;white-space:nowrap}
+.cards{display:grid;grid-template-columns:repeat(5,minmax(95px,1fr));gap:17px;margin:25px 0}
+.uno{aspect-ratio:.66;position:relative;border:5px solid #fff;border-radius:17px;overflow:hidden;background:#182133;padding:0;
+box-shadow:0 7px 0 rgba(0,0,0,.24),0 12px 16px rgba(44,16,6,.22);transition:transform .3s,filter .3s}
+.uno:not(:disabled):hover{transform:translateY(-10px) rotate(-2deg)}
+.uno::before{content:"";position:absolute;width:165%;height:55%;background:var(--red);border:5px solid var(--yellow);border-radius:50%;top:23%;left:-32%;transform:rotate(-27deg)}
+.uno .c{position:absolute;z-index:2;color:#fff;font-size:.8rem;font-weight:900;top:8px;left:8px}
+.uno .c.b{top:auto;left:auto;bottom:8px;right:8px;transform:rotate(180deg)}
+.uno .m{position:absolute;z-index:2;inset:0;display:grid;place-items:center;font:800 clamp(1.7rem,4vw,3rem) "Fira Sans";color:#fff;transform:rotate(-27deg)}
+.uno:disabled{filter:grayscale(1);opacity:.45;cursor:not-allowed;transform:none}
+.uno .tag{position:absolute;z-index:5;bottom:10px;left:5px;right:5px;font-size:.6rem;border-radius:99px;padding:4px;color:#fff;background:#4a4a4a;font-weight:800}
+.shuf{animation:shuf .65s ease-in-out 2}
+@keyframes shuf{0%,100%{transform:none}25%{transform:translateX(-18px) rotate(-8deg)}70%{transform:translateX(18px) rotate(8deg)}}
+.qcard{--cc:var(--red);position:relative;background:var(--cc);border-radius:32px;min-height:300px;overflow:hidden;padding:clamp(25px,5vw,48px);border:7px solid #fff;box-shadow:0 12px 0 rgba(45,15,5,.28),0 18px 30px rgba(42,12,3,.25)}
+.qcard::before{content:"";position:absolute;width:125%;height:87%;border-radius:50%;background:#fff;left:-13%;top:8%;transform:rotate(-12deg)}
+.qin{position:relative;z-index:1}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.meta span{border-radius:999px;font-weight:800;padding:7px 12px}
+.qn{background:var(--ink);color:#fff}.qc{background:#f5efe3;border:2px solid #e2d5c5}
+.qt{font:800 clamp(1.15rem,3vw,1.7rem)/1.32 "Fira Sans";margin:0}
+.wm{position:absolute;z-index:2;right:18px;bottom:10px;max-width:75%;color:rgba(24,33,51,.48);font-size:.72rem;font-weight:800;text-align:right;overflow-wrap:anywhere;pointer-events:none}
+.answers{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:23px 0 16px}
+.ans{border:5px solid #fff;border-radius:17px;min-height:132px;padding:13px 9px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--ink);box-shadow:0 7px 0 rgba(0,0,0,.24);transition:transform .2s}
+.ans .ch{display:grid;place-items:center;width:33px;height:33px;border-radius:50%;color:#fff;background:#172131;font-family:"Fira Sans"}
+.ans div{max-width:100%;padding:8px 10px;border-radius:10px;background:#fff;line-height:1.25;overflow-wrap:anywhere}
+.ans:nth-child(1){background:var(--red)}.ans:nth-child(2){background:var(--yellow)}.ans:nth-child(3){background:var(--green)}.ans:nth-child(4){background:var(--blue)}.ans:nth-child(5){background:#e0672b}
+.ans:hover:not(:disabled){transform:translateY(-6px) rotate(-1deg)}
+.ans:disabled{cursor:default}
+.ans.ok{background:#45b851!important;animation:bn .6s}.ans.no{background:#d53532!important;animation:sk .5s}
+@keyframes bn{45%{transform:translateY(-18px) scale(1.05)}}
+@keyframes sk{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+.fb{margin-top:14px;padding:15px 18px;border-radius:16px;background:#f0eadf;font-weight:700}
+.fb.good{background:#dbf7df;color:#125922}.fb.bad{background:#ffe0dc;color:#8c201d}
+.hidden{display:none!important}
+.bgmark{position:fixed;z-index:1;inset:45% 0 auto;text-align:center;font-size:clamp(2rem,8vw,6rem);font-weight:900;letter-spacing:.18em;color:rgba(255,255,255,.09);transform:rotate(-18deg);pointer-events:none;user-select:none}
+.big{font:800 clamp(4.5rem,14vw,8.8rem)/.9 "Fira Sans";color:var(--red);text-shadow:4px 4px 0 #f3c126;text-align:center;margin:15px 0}
+.sum{background:#fff3c7;border:3px dashed #bc8121;border-radius:18px;padding:15px;text-align:center;font-weight:700}
+.report{display:grid;gap:10px;margin-top:16px}
+.row{display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:center;background:#fff;padding:13px;border-left:8px solid var(--blue);border-radius:10px}
+.row.wrong{border-color:var(--red)}
+.st{font-weight:800;border-radius:99px;padding:6px 10px;font-size:.8rem}
+.st.ok{background:#d9f7de;color:#136221}.st.no{background:#ffe1dd;color:#91251e}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.modal{position:fixed;z-index:20;inset:0;background:rgba(19,11,8,.73);display:none;padding:20px;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.dlg{position:relative;width:100%;max-width:900px;max-height:90vh;overflow:auto;background:var(--cream);border:6px solid #fff;border-radius:25px;padding:clamp(22px,4vw,35px)}
+.x{position:absolute;top:13px;right:13px;width:40px;height:40px;border:0;border-radius:50%;background:#273142;color:#fff;font-weight:800}
+.sol{border-radius:16px;padding:16px;margin-top:12px;color:#fff}
+.sol:nth-of-type(odd){background:var(--red)}.sol:nth-of-type(even){background:var(--blue)}
+.sol h3{margin:0 0 7px;font-family:"Fira Sans"}.sol p{margin:0;line-height:1.55}
+.tw{overflow:auto;margin-top:12px;border:2px solid #d9cbbb;border-radius:13px}
+table{width:100%;border-collapse:collapse;min-width:720px;font-size:.88rem}
+th{background:#273142;color:#fff;text-align:left}th,td{padding:11px;border-bottom:1px solid #e7ddcf}
+.del{border:0;border-radius:8px;background:var(--red);color:#fff;font-weight:800;padding:7px 10px}
+.orn{position:fixed;z-index:1;width:110px;opacity:.75;pointer-events:none}
+.orn.o1{top:80px;left:-38px;transform:rotate(-19deg)}.orn.o2{bottom:44px;right:-35px;transform:rotate(18deg)}
+.face{aspect-ratio:.66;border:5px solid #fff;border-radius:17px;color:#fff;display:grid;place-items:center;font:800 2rem "Fira Sans"}
+.confetti{position:fixed;z-index:30;width:10px;height:16px;border-radius:2px;pointer-events:none;animation:fall 2.2s linear forwards}
+@keyframes fall{to{transform:translate(var(--x),110vh) rotate(760deg);opacity:0}}
+.admin{position:fixed;z-index:45;left:10px;bottom:10px}
+.dot{width:14px;height:14px;border-radius:50%;border:0;background:rgba(255,255,255,.18);padding:0}
+.dot:hover{background:rgba(255,255,255,.45)}
+.abox{display:none;gap:6px;background:rgba(24,33,51,.92);border-radius:10px;padding:6px;margin-bottom:8px}
+.abox.open{display:flex}
+.abox input{width:120px;padding:7px 9px;border-radius:7px;border:0;font-size:.8rem}
+.abox button{border:0;border-radius:7px;background:var(--blue);color:#fff;font-weight:800;padding:7px 10px;font-size:.75rem}
+#adminError{color:#ffb4b0;font-size:.75rem;font-weight:700;margin:0 0 6px}
+.nocopy{user-select:none;-webkit-user-select:none}
+.shield{position:fixed;z-index:40;inset:0;background:#0c0602;color:#fff;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;font-weight:800;font-size:1.1rem}
+.shield.show{display:flex}
+.toast{position:fixed;z-index:35;top:14px;left:50%;transform:translateX(-50%);background:#ad201d;color:#fff;font-weight:800;padding:10px 18px;border-radius:12px;max-width:90vw;display:none;text-align:center}
+.toast.show{display:block}
+@media print{body>*{display:none!important}body::before{content:"Konten dilindungi — tidak untuk dicetak.";display:block;padding:60px;text-align:center}}
+@media(max-width:700px){
+.shell{padding:18px 12px 50px}.grid2{grid-template-columns:1fr}
+.cards{gap:8px;grid-template-columns:repeat(5,minmax(55px,1fr))}
+.uno{border-width:3px;border-radius:11px}.uno .c{font-size:.55rem;top:5px;left:5px}.uno .c.b{top:auto;left:auto;bottom:5px;right:5px}.uno .tag{font-size:.45rem;bottom:4px}
+.answers{grid-template-columns:repeat(2,minmax(0,1fr))}.ans{min-height:112px}
+.head{flex-direction:column;align-items:flex-start}.row{grid-template-columns:55px 1fr}.row .st{grid-column:2;width:max-content}.orn{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ===== Tangan kartu ala UNO ===== */
+.board{padding:clamp(18px,3vw,28px)}
+.board .head{margin-bottom:10px}.board .sub{margin:4px 0 0;font-size:.92rem}
+.bar{height:10px;border-radius:99px;background:#eadfcf;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--red),var(--yellow),var(--green),var(--blue));transition:width .5s}
+.handwrap{display:flex;align-items:center;gap:6px;margin-top:6px}
+.arrow{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:var(--ink);color:#fff;font-size:1.7rem;line-height:1;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.arrow:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.hand{flex:1;min-width:0;display:flex;overflow-x:auto;scroll-snap-type:x proximity;padding:38px 24px 26px;scrollbar-width:none;cursor:grab;-webkit-overflow-scrolling:touch;touch-action:pan-x}
+.hand::-webkit-scrollbar{display:none}
+.hand.drag{cursor:grabbing;scroll-snap-type:none}
+.hand .uno{flex:none;width:112px;margin-left:-32px;scroll-snap-align:center;border-width:4px;border-radius:15px}
+.hand .uno:first-child{margin-left:0}
+.uno.red{background:var(--red)}.uno.yellow{background:var(--yellow)}.uno.green{background:var(--green)}.uno.blue{background:var(--blue)}
+.hand .uno::before{background:#fff;border:0;opacity:.96}
+.hand .uno .m{color:var(--ink)}
+.hand .uno .c{text-shadow:0 1px 0 rgba(0,0,0,.35)}
+.hand .uno:hover{transform:translateY(-24px) rotate(-2deg);z-index:5}
+.hand .uno.pick{transform:translateY(-34px) scale(1.14);z-index:9}
+.deal{animation:deal .35s backwards}
+@keyframes deal{from{opacity:0;transform:translateY(-46px) scale(.8)}}
+.report{grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.row{grid-template-columns:auto 1fr auto;gap:8px;padding:10px}
+@media(max-width:700px){
+.arrow{display:none}
+.hand{padding:34px 14px 22px}
+.hand .uno{width:88px;margin-left:-26px}
+.report{grid-template-columns:1fr}
+.row .st{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="shield" id="cheatShield">Layar disembunyikan sementara — kembali ke tab kuis untuk melanjutkan.</div>
+<div class="shield" id="blockShield">Kamu diblokir karena pelanggaran melebihi batas. Hubungi admin untuk membuka blokir.</div>
+<div class="toast" id="toast" role="alert"></div>
+
+<div class="shell" oncontextmenu="return false">
+  <div class="bgmark" aria-hidden="true">UNO MATH QUEST</div>
+  <div class="orn o1" aria-hidden="true"><div class="face" style="background:var(--blue)">+2</div></div>
+  <div class="orn o2" aria-hidden="true"><div class="face" style="background:var(--yellow);color:#372b00">↺</div></div>
+  <header class="brand"><h1>UNO Math Quest</h1><p>Kaidah Pencacahan &amp; Faktorial</p></header>
+  <main class="main">
+    <section id="attendanceScreen" class="screen active">
+      <div class="panel">
+        <h2>Presensi Siswa</h2>
+        <p class="sub">Isi data dirimu untuk memulai petualangan kartu matematika.</p>
+        <form id="attendanceForm" novalidate>
+          <div class="grid2">
+            <div><label for="studentName">Nama Lengkap</label><input id="studentName" type="text" autocomplete="name" maxlength="70"></div>
+            <div><label for="studentClass">Kelas/Nomor Presensi</label><input id="studentClass" type="text" maxlength="40"></div>
+          </div>
+          <p id="formError" class="err" role="alert"></p>
+          <button id="startButton" class="btn b-red" type="submit" disabled>Mulai Permainan</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="boardScreen" class="screen">
+      <div class="panel board">
+        <div class="head">
+          <div><h2>Pilih Kartumu</h2><p id="remainingText" class="sub" aria-live="polite"></p></div>
+          <div id="boardScore" class="pill" aria-live="polite">Skor: 0</div>
+        </div>
+        <div class="bar"><i id="barFill"></i></div>
+        <div class="handwrap">
+          <button id="prevBtn" class="arrow" type="button" aria-label="Geser kiri">‹</button>
+          <div id="cardsGrid" class="hand" aria-label="Kartu soal"></div>
+          <button id="nextBtn" class="arrow" type="button" aria-label="Geser kanan">›</button>
+        </div>
+        <p id="boardMessage" class="err center" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section id="questionScreen" class="screen">
+      <div id="questionCard" class="qcard nocopy">
+        <div class="qin">
+          <div class="meta"><span id="questionNumber" class="qn"></span><span id="questionCategory" class="qc"></span></div>
+          <h2 id="questionHeading" class="qt"></h2>
+        </div>
+        <span id="studentWatermark" class="wm" aria-hidden="true"></span>
+      </div>
+      <div id="answersGrid" class="answers nocopy" aria-label="Pilihan jawaban"></div>
+      <div id="feedback" class="fb hidden" role="status" aria-live="polite"></div>
+      <div class="center" style="margin-top:20px"><button id="continueButton" type="button" class="btn b-blue hidden">Lanjut</button></div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div class="panel">
+        <h2 class="center">Skor Akhir</h2>
+        <div id="finalScore" class="big" aria-live="polite">0</div>
+        <p id="scoreCaption" class="center sub"></p>
+        <div id="studentSummary" class="sum"></div>
+        <h3 style="margin:26px 0 0">Laporan Hasil Kerja</h3>
+        <div id="reportList" class="report"></div>
+        <p id="saveNotice" class="center" style="font-weight:700;min-height:24px;margin-top:18px" role="status" aria-live="polite"></p>
+        <div class="actions"><button id="solutionsButton" type="button" class="btn b-yellow">📖 Lihat Cara Penyelesaian &amp; Rumus Lengkap</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="admin">
+  <div id="adminBox" class="abox"><input id="adminPasswordInput" type="password" placeholder="Password" autocomplete="off"><button id="adminSubmit" type="button">Masuk</button></div>
+  <p id="adminError"></p>
+  <button id="adminDot" class="dot" type="button" aria-label="Admin"></button>
+</div>
+
+<div id="solutionsModal" class="modal" role="dialog" aria-modal="true">
+  <div class="dlg"><button class="x" data-close="solutionsModal" aria-label="Tutup">✕</button>
+    <h2>Cara Penyelesaian &amp; Rumus Lengkap</h2><div id="solutionsList"></div></div>
+</div>
+
+<div id="dashboardModal" class="modal" role="dialog" aria-modal="true">
+  <div class="dlg"><button class="x" data-close="dashboardModal" aria-label="Tutup">✕</button>
+    <h2>Dashboard Admin</h2>
+    <p class="sub" style="margin-bottom:0">Data diambil langsung dari Google Sheets dan diperbarui otomatis tiap 10 detik.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Nama</th><th>Kelas</th><th>Skor</th><th>Persentase</th><th>Pelanggaran</th><th>Durasi</th><th>Waktu</th></tr></thead>
+      <tbody id="dashboardRows"></tbody></table></div>
+    <p id="emptyDashboard" class="center hidden" style="font-weight:700;padding:14px"></p>
+    <h3 style="margin:26px 0 0">Siswa Diblokir (Pelanggaran Berlebih)</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Nama</th><th>Kelas</th><th>Waktu Diblokir</th><th>Aksi</th></tr></thead>
+      <tbody id="blockedRows"></tbody></table></div>
+    <p id="emptyBlocked" class="center hidden" style="font-weight:700;padding:14px"></p>
+  </div>
+</div>
+
+<script>
+// ================= KONFIGURASI =================
+// Tempel URL Web App Apps Script (hasil Deploy) di sini:
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwov9SeHnf2EsLQ9pHfddIUaszL0ym0yKsF_YYxoCGbxB245LCsxvZBI8hFAiWoKCs2/exec";
+const MAX_TAB = 2, MAX_CONTENT = 2;
+
+const questions = [
+ {id:1,category:"Aturan Penjumlahan",color:"red",text:"Rendi memiliki 3 sepeda motor dan 2 mobil. Jika Rendi pergi ke kantor menggunakan satu kendaraan miliknya, berapa banyak pilihan kendaraan yang dapat digunakan?",options:["5","6","8","12"],answer:"A",explanation:"Diketahui: Motor = 3, Mobil = 2. Memilih 1 kendaraan → Aturan Penjumlahan: 3 + 2 = 5. Jawaban: A (5)."},
+ {id:2,category:"Aturan Penjumlahan",color:"yellow",text:"Di meja belajar terdapat 4 pulpen hitam dan 3 pulpen biru. Jika Salsa ingin mengambil satu pulpen untuk menulis, berapa banyak pilihan pulpen yang bisa diambil Salsa?",options:["7","12","14","16"],answer:"A",explanation:"Diketahui: Pulpen hitam = 4, pulpen biru = 3. Aturan Penjumlahan: 4 + 3 = 7. Jawaban: A (7)."},
+ {id:3,category:"Aturan Pencacahan",color:"green",text:"Dua buah dadu dilempar bersamaan. Banyaknya pasangan mata dadu yang muncul berjumlah 10 adalah...",options:["2","3","4","5"],answer:"B",explanation:"Pasangan yang berjumlah 10 adalah (4,6), (5,5), dan (6,4). Ada 3 pasangan. Jawaban: B (3)."},
+ {id:4,category:"Aturan Penjumlahan",color:"blue",text:"Dari 100 siswa, 60 siswa lolos seleksi Bahasa Indonesia, 50 siswa lolos seleksi Matematika, dan 30 siswa lolos keduanya. Banyak siswa yang hanya lolos seleksi Matematika adalah...",options:["20","30","40","50"],answer:"A",explanation:"Diketahui: Lolos Matematika = 50, lolos keduanya = 30. Hanya lolos Matematika = 50 − 30 = 20 siswa. Jawaban: A (20)."},
+ {id:5,category:"Aturan Penjumlahan",color:"red",text:"Untuk pergi ke sekolah, Budi bisa naik angkot dengan 3 rute berbeda atau naik bus kota dengan 2 rute berbeda. Banyak pilihan rute yang bisa dipilih Budi adalah...",options:["5","6","8","9"],answer:"A",explanation:"Diketahui: Angkot = 3 rute, bus = 2 rute. Memilih salah satu → Aturan Penjumlahan: 3 + 2 = 5. Jawaban: A (5)."},
+ {id:6,category:"Aturan Perkalian",color:"yellow",text:"Ani memiliki 4 baju dan 3 celana. Banyak pasangan baju dan celana yang dapat dipakai Ani adalah...",options:["7","12","14","16"],answer:"B",explanation:"Baju dan celana dipakai bersamaan → Aturan Perkalian: 4 × 3 = 12. Jawaban: B (12)."},
+ {id:7,category:"Aturan Perkalian",color:"green",text:"Dalam suatu kelas akan dipilih pengurus yang terdiri dari Ketua, Sekretaris, dan Bendahara. Jika calon ketua ada 6 orang, calon sekretaris 4 orang, dan calon bendahara 3 orang, berapa banyak susunan pengurus yang mungkin terbentuk?",options:["13","24","72","120"],answer:"C",explanation:"Diketahui: Ketua = 6, Sekretaris = 4, Bendahara = 3. Aturan Perkalian: 6 × 4 × 3 = 72 susunan. Jawaban: C (72)."},
+ {id:8,category:"Aturan Perkalian",color:"blue",text:"Dari kota X ke kota Y terdapat 3 jalan, dan dari kota Y ke kota Z terdapat 4 jalan. Berapa banyak rute perjalanan dari kota X ke kota Z melalui kota Y?",options:["7","10","12","24"],answer:"C",explanation:"Diketahui: Jalan X ke Y = 3, jalan Y ke Z = 4. Aturan Perkalian: 3 × 4 = 12 rute. Jawaban: C (12)."},
+ {id:9,category:"Aturan Perkalian",color:"red",text:"Sebuah restoran menyediakan 5 jenis makanan utama dan 3 jenis minuman. Banyak variasi paket yang terdiri dari 1 makanan dan 1 minuman adalah...",options:["8","15","20","25"],answer:"B",explanation:"Diketahui: Makanan = 5, minuman = 3. Aturan Perkalian: 5 × 3 = 15 paket. Jawaban: B (15)."},
+ {id:10,category:"Aturan Perkalian",color:"yellow",text:"Guru memberikan 3 soal pilihan ganda, di mana setiap soal memiliki 4 pilihan jawaban (A, B, C, D). Banyak cara seorang siswa menjawab ketiga soal tersebut adalah...",options:["12","27","64","81"],answer:"C",explanation:"Diketahui: 3 soal, masing-masing 4 pilihan. Aturan Perkalian: 4 × 4 × 4 = 64 cara. Jawaban: C (64)."},
+ {id:11,category:"Aturan Perkalian",color:"green",text:"Banyaknya bilangan ratusan (3 digit) yang dapat disusun dari angka 1, 2, dan 3 tanpa ada angka yang berulang adalah...",options:["3","6","9","27"],answer:"B",explanation:"Ada 3 angka untuk 3 digit tanpa berulang. Slot: [3] × [2] × [1] = 6 bilangan. Jawaban: B (6)."},
+ {id:12,category:"Aturan Perkalian",color:"blue",text:"Banyaknya bilangan ratusan yang nilainya kurang dari 300 yang dapat disusun dari angka 1, 2, 3, 4 tanpa ada angka berulang adalah...",options:["6","12","18","24"],answer:"B",explanation:"Ratusan (angka 1 atau 2) → 2 pilihan; puluhan → 3 pilihan; satuan → 2 pilihan. Total = 2 × 3 × 2 = 12 bilangan. Jawaban: B (12)."},
+ {id:13,category:"Aturan Perkalian",color:"red",text:"Dari angka 1, 2, 3, 4, 5 akan dibuat bilangan puluhan (2 digit) genap tanpa angka berulang. Banyak bilangan yang terbentuk adalah...",options:["8","10","12","20"],answer:"A",explanation:"Satuan (genap: 2 atau 4) → 2 pilihan; puluhan → 4 pilihan tersisa. Total = 4 × 2 = 8 bilangan. Jawaban: A (8)."},
+ {id:14,category:"Faktorial",color:"yellow",text:"Berapakah nilai dari 4! ?",options:["10","16","24","120"],answer:"C",explanation:"4! = 4 × 3 × 2 × 1 = 24. Jawaban: C (24)."},
+ {id:15,category:"Faktorial",color:"green",text:"Hasil dari penyederhanaan bentuk faktorial 6!/5! adalah...",options:["1","5","6","30"],answer:"C",explanation:"6!/5! = (6 × 5!)/5! = 6. Jawaban: C (6)."},
+ {id:16,category:"Faktorial",color:"blue",text:"Nilai dari 7!/5! adalah...",options:["12","35","42","56"],answer:"C",explanation:"7!/5! = (7 × 6 × 5!)/5! = 7 × 6 = 42. Jawaban: C (42)."},
+ {id:17,category:"Faktorial",color:"red",text:"Berapakah hasil dari 5! / (3! × 2!) ?",options:["10","20","30","60"],answer:"A",explanation:"5!/(3! × 2!) = (5 × 4 × 3!)/(3! × 2) = 20/2 = 10. Jawaban: A (10)."},
+ {id:18,category:"Faktorial",color:"yellow",text:"Hasil dari 8!/6! adalah...",options:["14","48","56","64"],answer:"C",explanation:"8!/6! = (8 × 7 × 6!)/6! = 8 × 7 = 56. Jawaban: C (56)."},
+ {id:19,category:"Faktorial",color:"green",text:"Tentukan nilai n jika diketahui n!/(n−1)! = 9.",options:["3","6","8","9"],answer:"D",explanation:"n!/(n−1)! = [n × (n−1)!]/(n−1)! = n. Karena hasilnya 9, maka n = 9. Jawaban: D (9)."},
+ {id:20,category:"Faktorial",color:"blue",text:"Berapakah nilai dari 3! + 2! ?",options:["5","8","10","12"],answer:"B",explanation:"3! + 2! = (3 × 2 × 1) + (2 × 1) = 6 + 2 = 8. Jawaban: B (8)."}
+];
+const TOTAL = questions.length;   // 20 soal
+const POINTS = 100 / TOTAL;       // 5 poin per soal, maksimal 100
+const letters = ["A","B","C","D"];
+const VK = "uno_math_quest_violations_v1", VT = "uno_math_quest_violation_types_v1";
+const el = id => document.getElementById(id);
+const state = { student:{name:"",class:""}, sessionId:null, startTime:null, order:Array.from({length:TOTAL}, (_, i) => i + 1), played:[], activeQuestion:null,
+  answers:{}, score:0, shuffled:false, shuffling:false, saved:false, cheatFlags:0, tabViolations:0, contentViolations:0,
+  blocked:false, awayFlagged:false, remoteBlockSynced:false };
+
+// ================= GOOGLE SHEETS =================
+async function sheet(action, params = {}) {
+  const url = new URL(SHEET_URL);
+  url.searchParams.set("action", action);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const r = await fetch(url.toString(), { cache: "no-store" });
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}
+
+// ================= PELANGGARAN (localStorage) =================
+const vid = (n, c) => JSON.stringify([n.trim().toLocaleLowerCase("id-ID"), c.trim().toLocaleLowerCase("id-ID")]);
+function readLS(k) { try { const v = JSON.parse(localStorage.getItem(k) || "{}"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; } }
+const getVCount = (n, c) => Number(readLS(VK)[vid(n, c)]) || 0;
+function getVTypes(n, c) { const s = readLS(VT)[vid(n, c)]; return s ? { tab:Number(s.tab)||0, content:Number(s.content)||0 } : { tab:0, content:0 }; }
+function setVTypes(n, c, counts) { const all = readLS(VT); all[vid(n, c)] = counts; localStorage.setItem(VT, JSON.stringify(all)); }
+function setVCount(n, c, count) {
+  const id = vid(n, c), a = readLS(VK), t = readLS(VT);
+  if (count > 0) a[id] = count; else { delete a[id]; delete t[id]; }
+  localStorage.setItem(VK, JSON.stringify(a)); localStorage.setItem(VT, JSON.stringify(t));
+}
+
+// ================= ALUR GAME =================
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  el(id).classList.add("active");
+  window.scrollTo({ top:0, behavior:"smooth" });
+}
+function updateStart() {
+  el("startButton").disabled = !(el("studentName").value.trim() && el("studentClass").value.trim());
+  el("formError").textContent = "";
+}
+el("studentName").addEventListener("input", updateStart);
+el("studentClass").addEventListener("input", updateStart);
+
+el("attendanceForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = el("studentName").value.trim(), cls = el("studentClass").value.trim();
+  if (!name || !cls) { el("formError").textContent = "Nama lengkap dan kelas wajib diisi terlebih dahulu."; return; }
+  el("startButton").disabled = true;
+  try {
+    const r = await sheet("isBlocked", { name, class:cls });
+    if (r.kind !== "isBlocked") throw new Error("bad response");
+    if (r.blocked) { el("formError").textContent = "Kamu diblokir karena pelanggaran berulang. Hubungi admin untuk membuka blokir."; el("startButton").disabled = false; return; }
+  } catch (err) {
+    el("formError").textContent = "Status blokir tidak bisa diperiksa. Coba lagi atau hubungi admin.";
+    el("startButton").disabled = false; return;
+  }
+  el("startButton").disabled = false;
+  let vt = getVTypes(name, cls);
+  if (vt.tab >= MAX_TAB || vt.content >= MAX_CONTENT) { setVCount(name, cls, 0); vt = { tab:0, content:0 }; }
+  state.student = { name, class:cls };
+  state.sessionId = Date.now() + "-" + Math.random().toString(36).slice(2, 10);
+  state.startTime = Date.now();
+  state.cheatFlags = getVCount(name, cls);
+  state.tabViolations = vt.tab; state.contentViolations = vt.content;
+  el("studentWatermark").textContent = name + " • " + cls;
+  renderBoard(); showScreen("boardScreen");
+});
+
+function renderBoard() {
+  el("boardScore").textContent = "Skor: " + state.score;
+  el("remainingText").textContent = "Soal ke-" + Math.min(state.played.length + 1, TOTAL) + " dari " + TOTAL + " • geser kartu, lalu pilih satu";
+  el("barFill").style.width = (state.played.length / TOTAL * 100) + "%";
+  state.order = shuffle(state.order);   // kartu otomatis dikocok setiap giliran
+  const hand = el("cardsGrid"); hand.innerHTML = "";
+  state.order.filter(id => !state.played.includes(id)).forEach((qid, i) => {
+    const q = questions.find(x => x.id === qid);
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "uno " + q.color + " deal";
+    b.style.animationDelay = (i * 25) + "ms";
+    b.disabled = state.blocked;
+    b.setAttribute("aria-label", "Pilih kartu " + (i + 1));
+    b.innerHTML = '<span class="c">UNO</span><span class="c b">UNO</span><span class="m">?</span>';
+    b.addEventListener("click", () => { if (!dragMoved) chooseCard(qid, b); });
+    hand.appendChild(b);
+  });
+  hand.scrollLeft = 0;
+}
+
+function shuffle(a) {
+  const c = [...a];
+  for (let i = c.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [c[i], c[j]] = [c[j], c[i]]; }
+  return c;
+}
+function chooseCard(id, card) {
+  if (state.played.includes(id) || state.blocked || state.picking) return;
+  state.picking = true;
+  card.classList.add("pick");
+  card.querySelector(".m").textContent = id;
+  setTimeout(() => { state.picking = false; state.activeQuestion = id; renderQuestion(); showScreen("questionScreen"); }, 450);
+}
+
+// Geser kartu: swipe di HP, drag/scroll/tombol panah di desktop
+let dragMoved = false;
+(function () {
+  const h = el("cardsGrid"); let down = false, sx = 0, sl = 0;
+  h.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") return; down = true; dragMoved = false; sx = e.clientX; sl = h.scrollLeft; });
+  window.addEventListener("pointermove", e => {
+    if (!down) return;
+    const dx = e.clientX - sx;
+    if (Math.abs(dx) > 5) { dragMoved = true; h.classList.add("drag"); }
+    if (dragMoved) h.scrollLeft = sl - dx;
+  });
+  window.addEventListener("pointerup", () => { if (!down) return; down = false; h.classList.remove("drag"); setTimeout(() => { dragMoved = false; }, 0); });
+  h.addEventListener("wheel", e => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { h.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
+  el("prevBtn").addEventListener("click", () => h.scrollBy({ left: -320, behavior: "smooth" }));
+  el("nextBtn").addEventListener("click", () => h.scrollBy({ left: 320, behavior: "smooth" }));
+})();
+
+function renderQuestion() {
+  const q = questions.find(x => x.id === state.activeQuestion);
+  el("questionCard").style.setProperty("--cc", "var(--" + q.color + ")");
+  el("questionNumber").textContent = "SOAL " + q.id;
+  el("questionCategory").textContent = q.category;
+  el("questionHeading").textContent = q.text;
+  el("feedback").className = "fb hidden"; el("feedback").textContent = "";
+  el("continueButton").classList.add("hidden");
+  const grid = el("answersGrid"); grid.innerHTML = "";
+  q.options.forEach((opt, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "ans";
+    b.setAttribute("aria-label", "Pilihan " + letters[i] + ": " + opt);
+    b.innerHTML = '<span class="ch">' + letters[i] + "</span><div>" + opt + "</div>";
+    b.addEventListener("click", () => answerQuestion(letters[i], b));
+    grid.appendChild(b);
+  });
+}
+
+function playTone(ok) {
+  try {
+    const C = window.AudioContext || window.webkitAudioContext, ctx = new C(), o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = ok ? "sine" : "sawtooth";
+    o.frequency.setValueAtTime(ok ? 660 : 180, ctx.currentTime);
+    if (ok) o.frequency.exponentialRampToValueAtTime(940, ctx.currentTime + .18);
+    g.gain.setValueAtTime(.08, ctx.currentTime); g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .3);
+    o.connect(g).connect(ctx.destination); o.start(); o.stop(ctx.currentTime + .31);
+  } catch (e) {}
+}
+
+function answerQuestion(letter, clicked) {
+  if (state.blocked) return;
+  const q = questions.find(x => x.id === state.activeQuestion);
+  const ok = letter === q.answer;
+  state.answers[q.id] = letter; state.played.push(q.id);
+  document.querySelectorAll(".ans").forEach(b => b.disabled = true);
+  clicked.classList.add(ok ? "ok" : "no");
+  const fb = el("feedback"); fb.classList.remove("hidden");
+  if (ok) { state.score += POINTS; fb.className = "fb good"; fb.textContent = "BENAR! +" + POINTS + " poin. Pembahasan lengkap: " + q.explanation; }
+  else { fb.className = "fb bad"; fb.textContent = "SALAH — Jawaban benar: " + q.answer + ". " + q.options[letters.indexOf(q.answer)] + ". Pembahasan lengkap: " + q.explanation; }
+  playTone(ok);
+  const cb = el("continueButton");
+  cb.classList.remove("hidden");
+  cb.textContent = state.played.length === TOTAL ? "Lihat Skor Akhir" : "Lanjut ke Pengocokan Kartu";
+}
+
+el("continueButton").addEventListener("click", () => {
+  if (state.blocked) return;
+  if (state.played.length === TOTAL) { renderResults(); showScreen("resultScreen"); }
+  else { state.activeQuestion = null; renderBoard(); showScreen("boardScreen"); }
+});
+
+function renderResults() {
+  el("studentSummary").textContent = "Pemain: " + state.student.name + " • Kelas: " + state.student.class;
+  el("scoreCaption").textContent = "Dari maksimal 100 poin • " + state.score + "% pencapaian" + (state.cheatFlags > 0 ? " • Pelanggaran terdeteksi: " + state.cheatFlags : "");
+  const rep = el("reportList"); rep.innerHTML = "";
+  questions.forEach(q => {
+    const sel = state.answers[q.id], ok = sel === q.answer;
+    const r = document.createElement("article");
+    r.className = "row" + (ok ? "" : " wrong");
+    r.innerHTML = "<strong>Soal " + q.id + "</strong><div><b>Jawabanmu:</b> " + sel + " &nbsp; <b>Jawaban benar:</b> " + q.answer + "</div><span class='st " + (ok ? "ok'>Benar" : "no'>Salah") + "</span>";
+    rep.appendChild(r);
+  });
+  saveScore();
+  animateScore(); confetti();
+}
+function animateScore() {
+  const target = state.score, s = el("finalScore"); let v = 0;
+  const t = setInterval(() => { v += Math.max(1, Math.ceil((target - v) / 10)); if (v >= target) { v = target; clearInterval(t); } s.textContent = v; }, 35);
+}
+function confetti() {
+  const cols = ["#e73532","#f7bf20","#249849","#1674cf","#ffffff"];
+  for (let i = 0; i < 70; i++) {
+    const p = document.createElement("span"); p.className = "confetti";
+    p.style.left = Math.random() * 100 + "vw"; p.style.top = (-10 - Math.random() * 25) + "px";
+    p.style.background = cols[i % 5]; p.style.setProperty("--x", (Math.random() * 220 - 110) + "px");
+    p.style.animationDelay = Math.random() * .35 + "s"; document.body.appendChild(p);
+    setTimeout(() => p.remove(), 2800);
+  }
+}
+
+// Kirim skor otomatis ke Google Sheets (retry sampai 5x)
+function saveScore(attempt = 0) {
+  if (state.saved && attempt === 0) return;
+  state.saved = true;
+  const n = el("saveNotice");
+  n.textContent = "Mengirim skor...";
+  sheet("score", {
+    sessionId:state.sessionId, name:state.student.name, class:state.student.class,
+    score:state.score, percentage:state.score, cheatFlags:state.cheatFlags,
+    durationSec:Math.round((Date.now() - state.startTime) / 1000), answers:JSON.stringify(state.answers)
+  }).then(r => { if (!r.ok) throw new Error(); n.textContent = "Skor berhasil dikirim ke Google Sheets."; })
+    .catch(() => { if (attempt < 4) setTimeout(() => saveScore(attempt + 1), 3000); else n.textContent = "Skor gagal dikirim. Segera beri tahu gurumu."; });
+}
+
+// ================= MODAL & PEMBAHASAN =================
+const openModal = id => el(id).classList.add("open");
+const closeModal = id => el(id).classList.remove("open");
+el("solutionsButton").addEventListener("click", () => {
+  el("solutionsList").innerHTML = questions.map(q => '<section class="sol"><h3>Soal ' + q.id + " — " + q.category + "</h3><p>" + q.explanation + "</p></section>").join("");
+  openModal("solutionsModal");
+});
+document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => closeModal(b.dataset.close)));
+document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => { if (e.target === m) closeModal(m.id); }));
+document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll(".modal.open").forEach(m => closeModal(m.id)); });
+
+// ================= DASHBOARD ADMIN =================
+let adminPassword = "";
+const esc = v => { const d = document.createElement("div"); d.textContent = v == null ? "" : String(v); return d.innerHTML; };
+
+function renderScoreRows(rows) {
+  const body = el("dashboardRows"); body.innerHTML = "";
+  el("emptyDashboard").textContent = "Belum ada skor di Google Sheets.";
+  el("emptyDashboard").classList.toggle("hidden", rows.length !== 0);
+  rows.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = [r.name, r.class, r.score, r.percentage + "%", r.cheatFlags, r.duration, r.time].map(v => "<td>" + esc(v) + "</td>").join("");
+    body.appendChild(tr);
+  });
+}
+async function loadScores() {
+  try {
+    const r = await sheet("scores", { password:adminPassword });
+    if (r.kind !== "scores") throw new Error();
+    renderScoreRows(r.rows);
+  } catch (e) { el("dashboardRows").innerHTML = "<tr><td colspan='7'>Gagal memuat skor. Cek koneksi / deploy Apps Script.</td></tr>"; }
+}
+async function loadBlocked() {
+  try {
+    const r = await sheet("blocked", { password:adminPassword });
+    if (r.kind !== "blocked" || !Array.isArray(r.rows)) throw new Error();
+    renderBlocked(r.rows);
+  } catch (e) { renderBlocked([], "Daftar blokir gagal dimuat. Periksa koneksi atau deploy Apps Script."); }
+}
+function renderBlocked(list, msg = "") {
+  const body = el("blockedRows"); body.innerHTML = "";
+  el("emptyBlocked").textContent = msg || "Tidak ada siswa yang sedang diblokir.";
+  el("emptyBlocked").classList.toggle("hidden", list.length !== 0);
+  list.forEach(en => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + esc(en.name) + "</td><td>" + esc(en.class) + "</td><td>" + esc(en.time) + "</td><td></td>";
+    const b = document.createElement("button");
+    b.className = "del"; b.type = "button"; b.textContent = "Buka Blokir";
+    b.addEventListener("click", async () => {
+      b.disabled = true;
+      try {
+        const r = await sheet("unblock", { name:en.name, class:en.class, password:adminPassword });
+        if (!r.ok) throw new Error();
+        loadBlocked();
+      } catch (e) {
+        b.disabled = false;
+        el("emptyBlocked").classList.remove("hidden");
+        el("emptyBlocked").textContent = "Gagal membuka blokir. Periksa koneksi internet.";
+      }
+    });
+    tr.lastElementChild.appendChild(b);
+    body.appendChild(tr);
+  });
+}
+setInterval(() => { if (el("dashboardModal").classList.contains("open")) { loadScores(); loadBlocked(); } }, 10000);
+
+el("adminDot").addEventListener("click", () => {
+  el("adminBox").classList.toggle("open"); el("adminError").textContent = "";
+  if (el("adminBox").classList.contains("open")) el("adminPasswordInput").focus();
+});
+async function adminLogin() {
+  const pw = el("adminPasswordInput").value;
+  if (!pw) return;
+  el("adminError").textContent = "Memeriksa...";
+  try {
+    const r = await sheet("scores", { password:pw });
+    if (r.kind !== "scores") { el("adminError").textContent = "Password salah."; return; }
+    adminPassword = pw;
+    el("adminBox").classList.remove("open"); el("adminPasswordInput").value = ""; el("adminError").textContent = "";
+    renderScoreRows(r.rows); loadBlocked(); openModal("dashboardModal");
+  } catch (e) { el("adminError").textContent = "Gagal terhubung ke server."; }
+}
+el("adminSubmit").addEventListener("click", adminLogin);
+el("adminPasswordInput").addEventListener("keydown", e => { if (e.key === "Enter") adminLogin(); });
+
+// ================= ANTI-KECURANGAN =================
+// Catatan: screenshot/perekaman layar TIDAK bisa dideteksi browser. Yang terdeteksi hanya
+// efek sampingnya: pindah tab/aplikasi, hilang fokus, dan shortcut tertentu di desktop.
+let toastTimer;
+function toast(msg) {
+  const t = el("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 4000);
+}
+function flagCheat(reason, category) {
+  if (state.blocked || !state.student.name) return;
+  const tab = category === "tab";
+  state.cheatFlags++;
+  if (tab) state.tabViolations++; else state.contentViolations++;
+  setVTypes(state.student.name, state.student.class, { tab:state.tabViolations, content:state.contentViolations });
+  setVCount(state.student.name, state.student.class, state.cheatFlags);
+  const limit = tab ? MAX_TAB : MAX_CONTENT, count = tab ? state.tabViolations : state.contentViolations;
+  toast("Peringatan: " + reason + " (" + (tab ? "pindah tab" : "aktivitas di layar soal") + " " + count + "/" + limit + ")");
+  if (count >= limit) { state.blocked = true; blockStudent(); }
+}
+function flagAway(reason) { if (state.awayFlagged) return; state.awayFlagged = true; flagCheat(reason, "tab"); }
+const onQuiz = () => el("questionScreen").classList.contains("active");
+const inNoCopy = e => e.target.closest && e.target.closest(".nocopy");
+
+document.addEventListener("copy", e => { if (inNoCopy(e)) { e.preventDefault(); flagCheat("percobaan menyalin soal"); } });
+document.addEventListener("cut", e => { if (inNoCopy(e)) { e.preventDefault(); flagCheat("percobaan memotong soal"); } });
+document.addEventListener("contextmenu", e => { if (inNoCopy(e)) { e.preventDefault(); flagCheat("percobaan membuka menu salin soal"); } });
+document.addEventListener("selectstart", e => { if (inNoCopy(e)) e.preventDefault(); });
+document.addEventListener("keydown", e => {
+  const k = e.key, combo = e.ctrlKey || e.metaKey, q = onQuiz();
+  if (k === "F12") { e.preventDefault(); if (q) flagCheat("percobaan membuka DevTools"); }
+  if (combo && e.shiftKey && "ijcIJC".includes(k)) { e.preventDefault(); if (q) flagCheat("percobaan membuka DevTools"); }
+  if (combo && (k === "u" || k === "U")) { e.preventDefault(); if (q) flagCheat("percobaan melihat source"); }
+  if (combo && !e.shiftKey && "cCxX".includes(k) && k.length === 1) { if (q) { e.preventDefault(); flagCheat("percobaan menyalin soal"); } }
+  if (combo && (k === "s" || k === "S")) { e.preventDefault(); if (q) flagCheat("percobaan menyimpan halaman"); }
+  if (combo && (k === "p" || k === "P")) { e.preventDefault(); if (q) flagCheat("percobaan print"); }
+  if (k === "PrintScreen") { e.preventDefault(); if (q) flagCheat("percobaan screenshot"); }
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { if (onQuiz()) { flagAway("berpindah tab/aplikasi lain", "tab"); el("cheatShield").classList.add("show"); } }
+  else { state.awayFlagged = false; el("cheatShield").classList.remove("show"); }
+});
+window.addEventListener("blur", () => { if (onQuiz()) flagAway("keluar dari jendela kuis"); });
+window.addEventListener("focus", () => { state.awayFlagged = false; });
+
+// ================= BLOKIR =================
+function syncBlock() {
+  sheet("block", { name:state.student.name, class:state.student.class })
+    .then(r => { if (!r.ok) throw new Error(); state.remoteBlockSynced = true; })
+    .catch(() => setTimeout(syncBlock, 3000));
+}
+function blockStudent() {
+  state.remoteBlockSynced = false;
+  syncBlock();
+  el("cheatShield").classList.remove("show");
+  el("blockShield").classList.add("show");
+  document.querySelectorAll("#cardsGrid .uno, .ans, #shuffleButton, #continueButton").forEach(n => n.disabled = true);
+}
+// Cek tiap 3 detik: kalau admin membuka blokir, layar terkunci hilang otomatis
+setInterval(async () => {
+  if (!state.blocked || !state.remoteBlockSynced) return;
+  try {
+    const r = await sheet("isBlocked", { name:state.student.name, class:state.student.class });
+    if (r.kind === "isBlocked" && r.blocked === false) releaseBlock();
+  } catch (e) {}
+}, 3000);
+function releaseBlock() {
+  state.blocked = false; state.remoteBlockSynced = false;
+  setVCount(state.student.name, state.student.class, 0);
+  state.cheatFlags = 0; state.tabViolations = 0; state.contentViolations = 0;
+  el("blockShield").classList.remove("show");
+  if (el("boardScreen").classList.contains("active")) renderBoard();
+  else if (onQuiz()) {
+    const answered = !el("feedback").classList.contains("hidden");
+    document.querySelectorAll(".ans").forEach(b => b.disabled = answered);
+    el("continueButton").disabled = false;
+  }
+}
+</script>
+</body>
+</html>
